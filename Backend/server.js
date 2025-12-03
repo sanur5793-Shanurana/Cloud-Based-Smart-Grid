@@ -1,25 +1,24 @@
 import express from "express";
 import dotenv from "dotenv";
-import cors from "cors";
 import connectDB from "./config/db.js";
-
 import authRoutes from "./routes/authRoutes.js";
-import deviceRoutes from "./routes/deviceRoutes.js";
-import policyRoutes from "./routes/policyRoutes.js";
-import logsRoutes from "./routes/logsRoutes.js";
+import cors from "cors";
 
 dotenv.config();
-connectDB();
+await connectDB();
 
 const app = express();
-app.use(cors());
+
+// Enable CORS for frontend
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+
 app.use(express.json());
 
-// Routes
+// Auth routes
 app.use("/api/auth", authRoutes);
-app.use("/api/devices", deviceRoutes);
-app.use("/api/policies", policyRoutes);
-app.use("/api/logs", logsRoutes);
+
+// Test route
+app.get("/", (req, res) => res.json({ ok: true }));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
