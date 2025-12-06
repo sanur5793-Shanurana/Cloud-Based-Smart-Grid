@@ -7,7 +7,7 @@ import UserDashboard from "./components/UserDashboard";
 import { Navigate } from "react-router-dom";
 import AdminDashboard from "./components/AdminDashboard";
 import SupervisorDashboard from "./components/SupervisorDashboard";
-
+// import AreaHeadDashboard from "./components/AreaHeadDashboard";
 
 function App() {
   return (
@@ -20,6 +20,7 @@ function App() {
           <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/supervisor/:id" element={<SupervisorDashboard />} />
+          {/* <Route path="/areaHead-dashboard/:id" element={<AreaHeadDashboard />} /> */}
           <Route path="/supervisor-dashboard/:id" element={<SupervisorDashboard />} />          <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </div>

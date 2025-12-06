@@ -4,7 +4,7 @@ import api from "../utils/api";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "", role: "user" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const nav = useNavigate();
@@ -26,14 +26,24 @@ export default function Login() {
 
       const { role, _id } = res.data.user;
 
-      // ---- FIXED ROLE ROUTES ----
+      // ============================
+      //  ROLE MUST MATCH VALIDATION
+      // ============================
+      if (form.role !== role) {
+        setError(
+          `Selected role (${form.role}) does NOT match your account role (${role}).`
+        );
+        setLoading(false);
+        return;
+      }
+
+      // ---- ROLE ROUTING ----
       switch (role) {
         case "admin":
           nav("/admin");
           break;
 
         case "supervisor":
-          // FIX: supervisor dashboard URL
           nav(`/supervisor-dashboard/${_id}`);
           break;
 
@@ -52,60 +62,75 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-green-600 via-blue-600 to-purple-700 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-purple-700 to-pink-600 p-6">
+
       <form
         onSubmit={submit}
-        className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/30 rounded-3xl p-8 shadow-2xl text-white animate-slideIn"
+        className="w-full max-w-md bg-white/10 backdrop-blur-2xl border border-white/20 
+                   rounded-3xl p-10 shadow-2xl text-white animate-fadeIn"
       >
-        <h2 className="text-3xl font-bold text-center mb-6 drop-shadow-lg">
-          Welcome Back
-        </h2>
+        <h2 className="text-4xl font-extrabold text-center mb-8 drop-shadow-lg">Login</h2>
 
         {error && (
-          <div className="bg-red-500/80 p-3 mb-4 rounded-md text-white font-medium text-center">
+          <div className="bg-red-500/80 p-3 mb-5 rounded-lg text-center font-semibold shadow-lg">
             {error}
           </div>
         )}
 
-        <div className="mb-5">
-          <label className="block mb-1 font-semibold">Email</label>
+        <div className="mb-6">
+          <label className="block mb-1 font-semibold text-white">Email</label>
           <input
             name="email"
             type="email"
             value={form.email}
             onChange={handle}
-            placeholder="example@email.com"
             required
-            className="w-full px-4 py-3 rounded-xl bg-white/30 focus:ring-2 
-                       focus:ring-purple-400 outline-none placeholder-white/70 transition"
+            placeholder="example@gmail.com"
+            className="w-full px-4 py-3 rounded-xl bg-white/20 border border-white/40
+                      outline-none placeholder-white/70 focus:ring-2 focus:ring-purple-300 transition"
           />
         </div>
 
         <div className="mb-6">
-          <label className="block mb-1 font-semibold">Password</label>
+          <label className="block mb-1 font-semibold text-white">Password</label>
           <input
             name="password"
             type="password"
             value={form.password}
             onChange={handle}
-            placeholder="••••••••"
             required
-            className="w-full px-4 py-3 rounded-xl bg-white/30 focus:ring-2 
-                      focus:ring-blue-400 outline-none placeholder-white/70 transition"
+            placeholder="••••••••"
+            className="w-full px-4 py-3 rounded-xl bg-white/20 border border-white/40
+                      outline-none placeholder-white/70 focus:ring-2 focus:ring-blue-300 transition"
           />
+        </div>
+
+        <div className="mb-8">
+          <label className="block mb-1 font-semibold text-white">Role</label>
+          <select
+            name="role"
+            value={form.role}
+            onChange={handle}
+            className="w-full px-4 py-3 rounded-xl bg-white/20 border border-white/40
+                      outline-none focus:ring-2 focus:ring-green-300 transition"
+          >
+            <option value="user" className="text-black">User</option>
+            <option value="admin" className="text-black">Admin</option>
+            <option value="supervisor" className="text-black">Supervisor</option>
+          </select>
         </div>
 
         <button
           type="submit"
           disabled={loading}
           className="w-full py-3 font-bold rounded-xl bg-gradient-to-r 
-                    from-purple-500 to-pink-500 hover:brightness-110 
+                    from-indigo-500 to-pink-500 hover:brightness-110 
                     active:scale-95 transition shadow-lg text-white"
         >
           {loading ? "Logging in..." : "Login"}
         </button>
 
-        <p className="text-center text-white/70 mt-4">
+        <p className="text-center text-white/70 mt-6">
           Don’t have an account?{" "}
           <span
             className="text-yellow-300 cursor-pointer hover:underline"

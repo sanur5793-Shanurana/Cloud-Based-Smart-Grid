@@ -4,41 +4,42 @@ import axios from "axios";
 
 export default function SupervisorDashboard() {
   const nav = useNavigate();
-  const { id } = useParams(); // supervisor ID from URL
-  const { state } = useLocation(); // data passed from admin panel
+  const { id } = useParams();
+  const { state } = useLocation();
 
   const [supervisor, setSupervisor] = useState(state || null);
-  const [loading, setLoading] = useState(!state); // load only if state is null
+  const [loading, setLoading] = useState(!state);
   const [error, setError] = useState("");
 
-  // 🔥 CASE 2: Supervisor logged in directly → fetch from DB
+  // Load supervisor if no state or refresh
   useEffect(() => {
     if (!state && id) {
       fetchSupervisor();
     }
   }, [id]);
 
-  // 🔥 Fetch from backend
   const fetchSupervisor = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/auth/supervisor/${id}`);
+      const res = await axios.get(
+        `http://localhost:5000/api/auth/supervisor/${id}`
+      );
       setSupervisor(res.data.supervisor);
     } catch (err) {
+      console.error(err);
       setError("Failed to load supervisor details.");
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) {
+  if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center text-white text-3xl">
         Loading supervisor dashboard...
       </div>
     );
-  }
 
-  if (error || !supervisor) {
+  if (error || !supervisor)
     return (
       <div className="min-h-screen flex items-center justify-center text-white text-2xl">
         {error || "Supervisor data not found!"}
@@ -50,7 +51,6 @@ export default function SupervisorDashboard() {
         </button>
       </div>
     );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-700 p-10 text-white">
@@ -60,17 +60,44 @@ export default function SupervisorDashboard() {
           Supervisor Dashboard
         </h1>
 
+        {/* Supervisor Details Section */}
         <div className="space-y-4 text-xl">
-          <p><b>Name:</b> {supervisor.name}</p>
-          <p><b>Email:</b> {supervisor.email}</p>
-          <p><b>Role:</b> {supervisor.role}</p>
-          <p><b>ID:</b> {supervisor._id}</p>
+
           <p>
-            <b>Created:</b>{" "}
+            <b>Name:</b> {supervisor.name}
+          </p>
+
+          <p>
+            <b>Email:</b> {supervisor.email}
+          </p>
+
+          <p>
+            <b>Phone:</b> {supervisor.phone}
+          </p>
+
+          <p>
+            <b>Role:</b> {supervisor.role}
+          </p>
+
+          <p>
+            <b>ID:</b> {supervisor._id}
+          </p>
+
+          <p>
+            <b>City / Village:</b> {supervisor.address?.cityOrVillage}
+          </p>
+
+          <p>
+            <b>Area:</b> {supervisor.address?.area}
+          </p>
+
+          <p>
+            <b>Created At:</b>{" "}
             {supervisor.createdAt
               ? new Date(supervisor.createdAt).toLocaleString()
               : "N/A"}
           </p>
+
         </div>
 
         <button
